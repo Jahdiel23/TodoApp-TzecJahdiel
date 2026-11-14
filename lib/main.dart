@@ -1,9 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-void main() async {
+import 'firebase_options.dart';
+import 'routes/app_pages.dart';
+import 'routes/app_routes.dart';
+import 'services/auth_service.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  Get.put(AuthService(), permanent: true);
 
   runApp(const MyApp());
 }
@@ -11,45 +22,13 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<FirebaseApp> _initializeFirebase() async {
-    return await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('TodoTo Jahdiel')),
-        body: Center(
-          child: FutureBuilder(
-            future: _initializeFirebase(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              }
-
-              if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'Error al conectar Firebase:\n${snapshot.error}',
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              }
-
-              return const Text(
-                'Firebase conectado correctamente 🚀',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              );
-            },
-          ),
-        ),
-      ),
+      title: 'TodoTo AnderCode',
+      initialRoute: AppRoutes.home,
+      getPages: AppPages.pages,
     );
   }
 }
